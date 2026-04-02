@@ -1,0 +1,310 @@
+{
+  "storeId": "wellgreens_lemon_grove",
+  "storeName": "Wellgreens - Lemon Grove",
+  "month": "2025-01",
+  "periodStartUTC": "2025-01-01T00:00:00.000Z",
+  "periodEndUTC": "2025-01-31T23:59:59.000Z",
+  "version": "v1",
+  "variant": "ClosingReport",
+  "data": {
+    "totalTips": 0,
+    "payByBankTips": 0,
+    "payByBankTransactionFees": 0,
+    "payByBankBatchFile": [
+      {
+        "batchFileName": null,
+        "payByBankBatchFileAdjustmentAmount": 0
+      }
+    ],
+    "feesDonations": [
+      {
+        "name": "Tips",
+        "cashValue": 16654.91,
+        "isRevenue": false
+      }
+    ],
+    "dutchiePayTips": 0,
+    "dutchiePayTotalAdjustmentAmount": 0,
+    "dutchiePayBatchFileSums": [
+      {
+        "batchFileName": null,
+        "payByBankBatchFileAdjustmentAmount": 0
+      }
+    ],
+    "grossSales": 897518.43,
+    "discount": 152749.37,
+    "loyalty": 0,
+    "totalTax": 222128.08,
+    "cost": 445111.3994,
+    "coupons": 0,
+    "itemTotal": 742206.63,
+    "transactionCount": 21671,
+    "itemCount": 42842,
+    "customerCount": 9965,
+    "newCustomerCount": 1203,
+    "voidCount": 53,
+    "voidTotal": 2172.98,
+    "returnTotal": 2562.43,
+    "startingBalance": 3200,
+    "endingBalance": 3200,
+    "deposits": 529342,
+    "adjustments": null,
+    "totalPayments": 980989.62,
+    "invoiceTotal": 980989.62,
+    "cannabisSales": 736708.99,
+    "nonCannabisSales": 5497.64,
+    "netSales": 742206.63,
+    "revenueFeesDonations": 0,
+    "nonRevenueFeesDonations": 16654.91,
+    "rounding": 0,
+    "totalIncome": 980989.62,
+    "averageCartNetSales": 34.24884,
+    "overShort": -3865.02,
+    "categorySummary": [
+      {
+        "category": "Accessories",
+        "categoryTotal": 340.82,
+        "categoryGrossTotal": 389.22,
+        "categoryDiscountTotal": 43.41,
+        "categoryNetTotal": 340.82,
+        "categoryCost": 616
+      },
+      {
+        "category": "All-In-One Vape",
+        "categoryTotal": 82032.56,
+        "categoryGrossTotal": 100149.54,
+        "categoryDiscountTotal": 17432.24,
+        "categoryNetTotal": 82032.56,
+        "categoryCost": 51896.46443
+      },
+      {
+        "category": "Cartridge",
+        "categoryTotal": 86423.42,
+        "categoryGrossTotal": 105258.08,
+        "categoryDiscountTotal": 18059.04,
+        "categoryNetTotal": 86423.42,
+        "categoryCost": 53480.72145
+      },
+      {
+        "category": "Concentrates",
+        "categoryTotal": 39451.34,
+        "categoryGrossTotal": 49174.92,
+        "categoryDiscountTotal": 9695.6,
+        "categoryNetTotal": 39451.34,
+        "categoryCost": 24507.645
+      },
+      {
+        "category": "Edibles",
+        "categoryTotal": 63158.6,
+        "categoryGrossTotal": 77623.24,
+        "categoryDiscountTotal": 14464.64,
+        "categoryNetTotal": 63158.6,
+        "categoryCost": 32674.16334
+      },
+      {
+        "category": "Flower",
+        "categoryTotal": 281662.73,
+        "categoryGrossTotal": 337552.44,
+        "categoryDiscountTotal": 55617.36,
+        "categoryNetTotal": 281662.73,
+        "categoryCost": 164219.63257
+      },
+      {
+        "category": "Gear",
+        "categoryTotal": 5156.82,
+        "categoryGrossTotal": 6154.46,
+        "categoryDiscountTotal": 912.68,
+        "categoryNetTotal": 5156.82,
+        "categoryCost": 2980.36
+      },
+      {
+        "category": "Preroll",
+        "categoryTotal": 121278.51,
+        "categoryGrossTotal": 151846.56,
+        "categoryDiscountTotal": 30437.91,
+        "categoryNetTotal": 121278.51,
+        "categoryCost": 73327.71381
+      },
+      {
+        "category": "PROMO",
+        "categoryTotal": 886.89,
+        "categoryGrossTotal": 938.14,
+        "categoryDiscountTotal": 51.25,
+        "categoryNetTotal": 886.89,
+        "categoryCost": 647.42
+      },
+      {
+        "category": "SAMPLE",
+        "categoryTotal": 123.1,
+        "categoryGrossTotal": 126.6,
+        "categoryDiscountTotal": 3.5,
+        "categoryNetTotal": 123.1,
+        "categoryCost": 24.4088
+      },
+      {
+        "category": "Topicals",
+        "categoryTotal": 1610.02,
+        "categoryGrossTotal": 2049.49,
+        "categoryDiscountTotal": 439.47,
+        "categoryNetTotal": 1610.02,
+        "categoryCost": 990
+      },
+      {
+        "category": "Vape",
+        "categoryTotal": 60081.82,
+        "categoryGrossTotal": 66255.74,
+        "categoryDiscountTotal": 5592.27,
+        "categoryNetTotal": 60081.82,
+        "categoryCost": 39746.87
+      },
+      {
+        "category": "Total",
+        "categoryTotal": 742206.63,
+        "categoryGrossTotal": 897518.43,
+        "categoryDiscountTotal": 152749.37,
+        "categoryNetTotal": 742206.63,
+        "categoryCost": 445111.3994
+      }
+    ],
+    "paymentSummary": [
+      {
+        "paymentType": "Cash",
+        "totalPaid": 547337.15
+      },
+      {
+        "paymentType": "Debit",
+        "totalPaid": 411168.07
+      },
+      {
+        "paymentType": "Cash Back From Debit (-)",
+        "totalPaid": 14130.13
+      },
+      {
+        "paymentType": "Pre-Payments",
+        "totalPaid": 9783.27
+      },
+      {
+        "paymentType": "Credit",
+        "totalPaid": 26828.37
+      },
+      {
+        "paymentType": "Gift Card",
+        "totalPaid": 2.89
+      },
+      {
+        "paymentType": "Total Payments",
+        "totalPaid": 980989.62
+      }
+    ],
+    "taxSummary": [
+      {
+        "taxRate": "CA Excise Tax 15%",
+        "totalTax": 116021.04
+      },
+      {
+        "taxRate": "La Mesa Cannabis Tax 4%",
+        "totalTax": -1.5
+      },
+      {
+        "taxRate": "La Mesa Sales Tax 8.5%",
+        "totalTax": -3.82
+      },
+      {
+        "taxRate": "Lemon Grove Cannabis Tax 5%",
+        "totalTax": 36808.28
+      },
+      {
+        "taxRate": "Lemon Grove Sales Tax 7.75%",
+        "totalTax": 69308.88
+      },
+      {
+        "taxRate": "San Diego Cannabis Tax 8%",
+        "totalTax": -2.18
+      },
+      {
+        "taxRate": "San Diego Sales Tax 7.75%",
+        "totalTax": -2.62
+      },
+      {
+        "taxRate": "Total",
+        "totalTax": 222128.08
+      }
+    ],
+    "customerTypeSummary": [
+      {
+        "customerType": "Recreational",
+        "total": 711658.29,
+        "grossTotal": 857272.59,
+        "netTotal": 711658.29,
+        "discountTotal": 145614.3,
+        "customerTypeCost": 424463.30233,
+        "cannabisSales": 704037.63,
+        "nonCannabisSales": 5087.21
+      },
+      {
+        "customerType": "Medical",
+        "total": 32415.85,
+        "grossTotal": 39361.21,
+        "netTotal": 32415.85,
+        "discountTotal": 6945.36,
+        "customerTypeCost": 20216.74483,
+        "cannabisSales": 31976.44,
+        "nonCannabisSales": 410.43
+      },
+      {
+        "customerType": "MMIC",
+        "total": 694.92,
+        "grossTotal": 884.63,
+        "netTotal": 694.92,
+        "discountTotal": 189.71,
+        "customerTypeCost": 431.35224,
+        "cannabisSales": 694.92,
+        "nonCannabisSales": 0
+      }
+    ],
+    "orderTypeSummary": [
+      {
+        "orderType": "In Store",
+        "total": 700953.96,
+        "grossTotal": 846730.67,
+        "netTotal": 700953.96,
+        "discountTotal": 145776.71,
+        "orderTypeCost": 420321.32997
+      },
+      {
+        "orderType": "In-Store Pickup",
+        "total": 41252.67,
+        "grossTotal": 48225.33,
+        "netTotal": 41252.67,
+        "discountTotal": 6972.66,
+        "orderTypeCost": 24833.73943
+      }
+    ],
+    "orderSourceSummary": [
+      {
+        "orderSource": "Walk In",
+        "total": 701177.87,
+        "grossTotal": 847000.07,
+        "netTotal": 701177.87,
+        "discountTotal": 145822.2,
+        "orderSourceCost": 420443.69191
+      },
+      {
+        "orderSource": "Dutchie",
+        "total": 36748.15,
+        "grossTotal": 43055.37,
+        "netTotal": 36748.15,
+        "discountTotal": 6307.22,
+        "orderSourceCost": 22167.22885
+      },
+      {
+        "orderSource": "Weedmaps",
+        "total": 4280.61,
+        "grossTotal": 4900.56,
+        "netTotal": 4280.61,
+        "discountTotal": 619.95,
+        "orderSourceCost": 2544.14864
+      }
+    ]
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "PUBLIC_BASE_URL": "https://wellgreens-api-dev-417233642511.us-central1.run.app",
+  "QBO_REDIRECT_PATH": "/callback",
+  "CORS_ORIGINS": "http://localhost:5173,https://admin-wellgreens-dev.web.app",
+  "FRONT_ORIGIN": "https://admin-wellgreens-dev.web.app"
+
+}

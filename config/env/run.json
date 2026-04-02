@@ -1,0 +1,13 @@
+{
+  "APP_ENV": "dev",
+  "NODE_ENV": "development",
+  "CORS_ORIGINS": "http://localhost:5173,https://admin-wellgreens-dev.web.app",
+  "QBO_ENV": "sandbox",
+  "QBO_CLIENT_ID": "ABKJ0zlTQN4uPlgj1gqLrGlsIWYnrOypqwFuIFJ5gzKG9SRMHA",
+  "QBO_REDIRECT_PATH": "/callback",
+  "QBO_SCOPES": "com.intuit.quickbooks.accounting",
+  "QBO_API_BASE": "https://sandbox-quickbooks.api.intuit.com/v3/company/",
+  "SUPABASE_ISSUER": "https://pbwmssbuqugatvjycrih.supabase.co/auth/v1",
+  "SUPABASE_AUDIENCE": "authenticated",
+  "SUPABASE_URL": "https://pbwmssbuqugatvjycrih.supabase.co"
+}

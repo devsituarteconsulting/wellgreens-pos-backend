@@ -1,193 +1,134 @@
 # Wellgreens POS — Cron Jobs
 
-Registro de los jobs programados localmente para sincronización de datos.
-Usa **launchd** (nativo macOS) + **pmset** wake para garantizar ejecución.
+Scheduled sync jobs via **launchd** (macOS native). Runs on whichever Mac hosts the NestJS server.
 
 ---
 
-## Requisitos previos
+## Job Inventory
+
+| Plist | Schedule | Script | What it syncs |
+|-------|----------|--------|---------------|
+| `com.wellgreens.pos-sync-daily.plist` | Tue–Sun 2:00 AM | `sync-daily.sh` | Full sync: transactions (2-day), inventory (30-day), products, customers, employees, homebase |
+| `com.wellgreens.pos-sync-weekly.plist` | Monday 2:00 AM | `sync-weekly.sh` | Full sync: transactions (8-day catch-up), inventory (60-day), products, customers, employees, homebase |
+
+Both jobs call `POST /wg-pos/run-sync-job` on `localhost:8080`.
+
+---
+
+## Daily Sync (`sync-daily.sh`)
+
+**Schedule:** Tuesday through Sunday at 2:00 AM
+**Endpoint:** `POST /wg-pos/run-sync-job`
+
+```json
+{
+  "continue_on_error": false,
+  "retries": 3,
+  "default_from_days_ago": 2,
+  "receivedinventory_from_days_ago": 30,
+  "to_days_ahead": 1
+}
+```
+
+Syncs yesterday's transactions plus a 1-day buffer. Received inventory uses a 30-day rolling window.
+
+**Log:** `logs/sync-daily.log`
+
+---
+
+## Weekly Sync (`sync-weekly.sh`)
+
+**Schedule:** Monday at 2:00 AM
+**Endpoint:** `POST /wg-pos/run-sync-job`
+
+```json
+{
+  "continue_on_error": false,
+  "retries": 3,
+  "default_from_days_ago": 8,
+  "receivedinventory_from_days_ago": 60,
+  "to_days_ahead": 1
+}
+```
+
+Weekly catch-up with a full 8-day transaction lookback and 60-day received inventory window.
+
+**Log:** `logs/sync-weekly.log`
+
+---
+
+## Setup
+
+### Prerequisites
 
 - Node.js 20 (via `nvm`)
-- `pm2` instalado globalmente
-- Proyecto en `/Users/<usuario>/Desktop/Wellgreens/wellgreens-pos-backend`
-- Scripts en `/Users/<usuario>/Desktop/Wellgreens/`
+- `pm2` installed globally
+- NestJS server running at `http://localhost:8080`
 
-> En una nueva Mac, reemplaza `/Users/axelabimael04` por la ruta del usuario correspondiente en todos los archivos.
-
----
-
-## Scheduler: launchd (NO crontab)
-
-Se usa `launchd` en vez de `cron` porque:
-- **launchd ejecuta jobs pendientes** cuando la Mac despierta (cron no)
-- Es el scheduler nativo de macOS
-- Más robusto para Macs que duermen de noche
-
-Los plists viven en `~/Library/LaunchAgents/`:
-
-| Plist | Schedule | Script |
-|-------|----------|--------|
-| `com.wellgreens.sync-received-inventory.plist` | Mar–Dom 2 AM | `sync-received-inventory.sh` |
-| `com.wellgreens.run-sync-job.plist` | Lunes 2 AM | `run-sync-job.sh` |
-
-### Comandos útiles launchd
+### Install crons
 
 ```bash
-launchctl list | grep wellgreens                    # Ver agents cargados
-launchctl load ~/Library/LaunchAgents/com.wellgreens.*.plist    # Cargar
-launchctl unload ~/Library/LaunchAgents/com.wellgreens.*.plist  # Descargar
-```
+# 1. Set REPO_DIR to wherever you cloned the repo
+REPO_DIR="$HOME/automation/wellgreens-pos-backend"
 
----
+# 2. Generate plists with correct paths
+for f in "$REPO_DIR/scripts/plists/"*.plist; do
+  DEST="$HOME/Library/LaunchAgents/$(basename "$f")"
+  sed "s|__REPO_DIR__|$REPO_DIR|g" "$f" > "$DEST"
+done
 
-## Wake automático: pmset
+# 3. Load the jobs
+launchctl load ~/Library/LaunchAgents/com.wellgreens.pos-sync-daily.plist
+launchctl load ~/Library/LaunchAgents/com.wellgreens.pos-sync-weekly.plist
 
-La Mac se programa para **despertar sola** a la 1:58 AM todos los días:
-
-```bash
+# 4. (Optional) Schedule Mac auto-wake at 1:58 AM
 sudo pmset repeat wakeorpoweron MTWRFSU 01:58:00
 ```
 
-Verificar:
-```bash
-sudo pmset -g sched
-```
-
----
-
-## Scripts instalados
-
-| Archivo | Descripción |
-|---------|-------------|
-| `start-wellgreens-pos.sh` | Arranca el servidor NestJS vía pm2 (carga nvm) |
-| `sync-received-inventory.sh` | Sincroniza received inventory (ventana de logs si sesión activa) |
-| `run-sync-job.sh` | Corre el sync job completo (ventana de logs si sesión activa) |
-
----
-
-## Job 1: `sync-received-inventory.sh`
-
-**Cuándo:** Martes a Domingo a las 2:00 AM
-**Endpoint:** `POST /wg-pos/sync/inventory/receivedinventory`
-**Parámetros:** ventana rodante — `from_utc = hoy - 30 días`, `to_utc = mañana`
-**Log:** `logs/sync-received-inventory.log`
+### Start the NestJS server
 
 ```bash
-#!/bin/bash
-FROM=$(date -v-30d +%Y-%m-%d)
-TO=$(date -v+1d +%Y-%m-%d)
+cd "$REPO_DIR"
+npm install
+npm run build
 
-LOG_DIR="/Users/axelabimael04/Desktop/Wellgreens/logs"
-mkdir -p "$LOG_DIR"
-
-if [ "$(stat -f "%Su" /dev/console 2>/dev/null)" = "$(whoami)" ]; then
-  osascript -e "tell application \"Terminal\" to do script \"tail -f $LOG_DIR/sync-received-inventory.log\""
-fi
-
-echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] Running sync from=$FROM to=$TO" >> "$LOG_DIR/sync-received-inventory.log"
-
-curl -s -X POST http://localhost:8080/wg-pos/sync/inventory/receivedinventory \
-  -H "Content-Type: application/json" \
-  -d "{\"from_utc\":\"$FROM\",\"to_utc\":\"$TO\"}" \
-  >> "$LOG_DIR/sync-received-inventory.log" 2>&1
-
-echo "" >> "$LOG_DIR/sync-received-inventory.log"
-```
-
----
-
-## Job 2: `run-sync-job.sh`
-
-**Cuándo:** Lunes a las 2:00 AM
-**Endpoint:** `POST /wg-pos/run-sync-job`
-**Parámetros:** ninguno (usa defaults — incluye received inventory)
-**Log:** `logs/run-sync-job.log`
-
-```bash
-#!/bin/bash
-LOG_DIR="/Users/axelabimael04/Desktop/Wellgreens/logs"
-mkdir -p "$LOG_DIR"
-
-if [ "$(stat -f "%Su" /dev/console 2>/dev/null)" = "$(whoami)" ]; then
-  osascript -e "tell application \"Terminal\" to do script \"tail -f $LOG_DIR/run-sync-job.log\""
-fi
-
-echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] Running wg-pos/run-sync-job" >> "$LOG_DIR/run-sync-job.log"
-
-curl -s -X POST http://localhost:8080/wg-pos/run-sync-job \
-  -H "Content-Type: application/json" \
-  -d '{}' \
-  >> "$LOG_DIR/run-sync-job.log" 2>&1
-
-echo "" >> "$LOG_DIR/run-sync-job.log"
-```
-
----
-
-## Servidor NestJS con pm2
-
-El servidor corre en `http://localhost:8080` y se gestiona con pm2.
-
-```bash
-# Wrapper script (start-wellgreens-pos.sh)
-#!/bin/bash
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-nvm use 20
-cd /Users/axelabimael04/Desktop/Wellgreens/wellgreens-pos-backend
-npm run start:dev
-```
-
-### Comandos útiles pm2
-
-```bash
-pm2 status                      # Ver procesos activos
-pm2 logs wellgreens-pos         # Ver logs en tiempo real
-pm2 restart wellgreens-pos      # Reiniciar servidor
-pm2 stop wellgreens-pos         # Detener servidor
-```
-
----
-
-## Setup en una Mac nueva
-
-```bash
-# 1. Instalar nvm y node 20
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
-nvm install 20
-nvm use 20
-
-# 2. Instalar pm2
-npm install -g pm2
-
-# 3. Copiar los scripts y ajustar rutas (reemplazar axelabimael04 por el usuario)
-# Editar start-wellgreens-pos.sh, sync-received-inventory.sh, run-sync-job.sh
-
-# 4. Dar permisos de ejecución
-chmod +x start-wellgreens-pos.sh sync-received-inventory.sh run-sync-job.sh
-
-# 5. Registrar el servidor en pm2
-pm2 start start-wellgreens-pos.sh --name "wellgreens-pos"
+# Via pm2:
+pm2 start npm --name "wellgreens-pos" -- run start:prod
 pm2 save
-pm2 startup
-# → Ejecutar el comando sudo que genera
+pm2 startup  # run the sudo command it generates
+```
 
-# 6. Copiar los plists a ~/Library/LaunchAgents/
-cp com.wellgreens.sync-received-inventory.plist ~/Library/LaunchAgents/
-cp com.wellgreens.run-sync-job.plist ~/Library/LaunchAgents/
-launchctl load ~/Library/LaunchAgents/com.wellgreens.sync-received-inventory.plist
-launchctl load ~/Library/LaunchAgents/com.wellgreens.run-sync-job.plist
+### Verify
 
-# 7. Programar wake automático a la 1:58 AM
-sudo pmset repeat wakeorpoweron MTWRFSU 01:58:00
+```bash
+# Check loaded jobs
+launchctl list | grep pos-sync
+
+# Check server health
+curl http://localhost:8080/health
+
+# Manual test (2-day sync)
+curl -X POST http://localhost:8080/wg-pos/run-sync-job \
+  -H "Content-Type: application/json" \
+  -d '{"default_from_days_ago": 2, "receivedinventory_from_days_ago": 30, "to_days_ahead": 1}'
+```
+
+### Uninstall old crons
+
+If migrating from the previous setup (`sync-received-inventory.sh` + `run-sync-job.sh`):
+
+```bash
+launchctl unload ~/Library/LaunchAgents/com.wellgreens.sync-received-inventory.plist 2>/dev/null
+launchctl unload ~/Library/LaunchAgents/com.wellgreens.run-sync-job.plist 2>/dev/null
+rm -f ~/Library/LaunchAgents/com.wellgreens.sync-received-inventory.plist
+rm -f ~/Library/LaunchAgents/com.wellgreens.run-sync-job.plist
 ```
 
 ---
 
-## Notas
+## Notes
 
-- **pmset** despierta la Mac a la 1:58 AM → launchd ejecuta a las 2:00 AM en punto
-- **Failsafe**: si la Mac estaba apagada a las 2 AM, launchd ejecuta el job pendiente al despertar
-- Si la Mac está desbloqueada, `osascript` abrirá Terminal con `tail -f` del log automáticamente
-- No hay timeout en los scripts — los endpoints pueden tardar hasta 1 hora
-- Los logs se acumulan en `logs/` — limpiarlos manualmente si crecen demasiado
+- **pmset** wakes the Mac at 1:58 AM so launchd runs at 2:00 AM
+- **Failsafe:** if the Mac was asleep at 2 AM, launchd runs the pending job on wake
+- Logs accumulate in `logs/` — clean manually if they grow too large
+- The NestJS server must be running for crons to work (`pm2 status` to check)
